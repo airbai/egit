@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">NoiseMap</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="edit_message">Enter a message.</string>
+    <string name="button_send">Send</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_display_message">My Message</string>
+    <string name="title_activity_article_fragment">ArticleFragment</string>
+	<string name="tab1content">tab1</string>
+</resources>
