@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
         
-        
+         
         ActionBar bar = getActionBar();  
         bar.addTab(bar.newTab().setText("Tab 1"));  
         bar.addTab(bar.newTab().setText("Tab 2"));  
