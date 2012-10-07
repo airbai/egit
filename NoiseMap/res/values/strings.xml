@@ -9,4 +9,8 @@
     <string name="title_activity_display_message">My Message</string>
     <string name="title_activity_article_fragment">ArticleFragment</string>
 	<string name="tab1content">tab1</string>
+	<string name="shareToWeibo">分享到微博</string>
+	<string name="shareToMap">上传到地图</string>
+	<string name="recorderDescription">点击话筒开始测分贝</string>
+	<string name="googleMapApiKey">0Lj_JYJIppF95ji0WD6XprgtLmDQnmlOKbQ4RXA</string>
 </resources>

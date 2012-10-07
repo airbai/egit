@@ -15,36 +15,90 @@
            android:layout_width="match_parent"
            android:layout_height="wrap_content" >
        </TabWidget>
-       
-       
             <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-                <LinearLayout
+		     android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:id="@android:id/tabcontent"
+		     >
+                <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="586dp"
                     android:contentDescription="@string/tab1content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical" 
+    android:paddingTop="60dp">
 
-			    <EditText
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="100dip"
+    android:layout_weight="1"
+    android:orientation="vertical" >			    <EditText
 			        android:id="@+id/edit_message"
-			        android:layout_width="0dp"
+			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_weight="1"
 			        android:hint="@string/edit_message" />
 
 			    <Button
 			        android:layout_width="140dp"
 			        android:layout_height="wrap_content"
+			        android:background="@drawable/ic_action_search"
 			        android:onClick="sendMessage"
 			        android:text="@string/button_send" />
 
+			    <TextView
+			        android:id="@+id/recorderDescription"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:text="@string/recorderDescription" />
+			    
+			    <TextView
+			        android:id="@+id/recorder"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:text="TextView" />
+			    </LinearLayout>
+
+				<LinearLayout
+				    android:layout_width="fill_parent"
+				    android:layout_height="100dip"
+				    android:layout_weight="1"
+				    android:orientation="horizontal" >
+
+					<Button
+					    android:id="@+id/btnShareToWeibo"
+					    android:layout_width="wrap_content"
+					    android:layout_height="157dp"
+					    android:text="@string/shareToWeibo" />
+
+					<Button
+					    android:id="@+id/btnShareToMap"
+					    android:layout_width="fill_parent"
+					    android:layout_height="117dp"
+					    android:text="@string/shareToMap" />
+      
+</LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/tab2"
+    				android:paddingTop="60dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+			    	<com.google.android.maps.MapView
+			    	    android:id="@+id/mapview"
+				        android:layout_width="match_parent" 
+				        android:layout_height="match_parent"
+				        android:enabled="true"
+				        android:clickable="true"
+				        android:apiKey="@string/googleMapApiKey"
+				        />
+                </LinearLayout>
+                
+                <LinearLayout
+                    android:id="@+id/tab3"
+    				android:paddingTop="60dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 				

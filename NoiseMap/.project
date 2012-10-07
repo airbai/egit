@@ -3,6 +3,7 @@
 	<name>NoiseMap</name>
 	<comment></comment>
 	<projects>
+		<project>com_weibo_android</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
