@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom"
     android:orientation="vertical" >
-
     <TabHost
         android:id="@+id/tabhost"
         android:layout_width="match_parent"
-        android:layout_height="394dp" >
+        android:layout_height="fill_parent" >
 
        <TabWidget
            android:id="@android:id/tabs"
@@ -18,67 +18,77 @@
             <FrameLayout
 		     android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"
+		    android:orientation="vertical"
 		    android:id="@android:id/tabcontent"
 		     >
+
                 <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
-                    android:layout_height="586dp"
+                    android:layout_height="463dp"
+                    android:layout_gravity="top"
                     android:contentDescription="@string/tab1content"
-                    android:orientation="vertical" 
-    android:paddingTop="60dp">
+                    android:orientation="vertical"
+                    android:paddingTop="60dp" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/recorderDescription"
+                            android:layout_width="139dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.02"
+                            android:gravity="center"
+                            android:text="@string/recorderDescription" />
+
+                        <TextView
+                            android:id="@+id/recorder"
+                            android:layout_width="200dp"
+                            android:textSize="30dp"
+                            android:textColor="@color/decibel"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.05"
+                            android:gravity="center" />
 
-<LinearLayout
-    android:layout_width="fill_parent"
-    android:layout_height="100dip"
-    android:layout_weight="1"
-    android:orientation="vertical" >			    <EditText
-			        android:id="@+id/edit_message"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:hint="@string/edit_message" />
+                        <ImageButton
+                            android:id="@+id/btnRecord"
+                            android:layout_width="231dp"
+                            android:layout_height="231dp"
+                            android:layout_weight="0.07"
+                            android:maxWidth="@dimen/padding_medium"
+                            android:onClick="sendMessage"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/microphone"
+                            android:text="@string/button_send" />
 
-			    <Button
-			        android:layout_width="140dp"
-			        android:layout_height="wrap_content"
-			        android:background="@drawable/ic_action_search"
-			        android:onClick="sendMessage"
-			        android:text="@string/button_send" />
+                    </LinearLayout>
 
-			    <TextView
-			        android:id="@+id/recorderDescription"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_weight="1"
-			        android:text="@string/recorderDescription" />
-			    
-			    <TextView
-			        android:id="@+id/recorder"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_weight="1"
-			        android:text="TextView" />
-			    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+      					android:layout_weight="0"
+      					android:weightSum="1"
+                        android:orientation="horizontal" >
 
-				<LinearLayout
-				    android:layout_width="fill_parent"
-				    android:layout_height="100dip"
-				    android:layout_weight="1"
-				    android:orientation="horizontal" >
-
-					<Button
-					    android:id="@+id/btnShareToWeibo"
-					    android:layout_width="wrap_content"
-					    android:layout_height="157dp"
-					    android:text="@string/shareToWeibo" />
-
-					<Button
-					    android:id="@+id/btnShareToMap"
-					    android:layout_width="fill_parent"
-					    android:layout_height="117dp"
-					    android:text="@string/shareToMap" />
-      
-</LinearLayout>
+					    <Button
+					        android:id="@+id/btnShareToWeibo"
+					        android:layout_width="wrap_content"
+					        android:layout_height="fill_parent"
+            				android:layout_weight="0.5"
+					        android:text="@string/shareToWeibo" />
+					
+					    <Button
+					        android:id="@+id/btnShareToMap"
+					        android:layout_width="172dp"
+            				android:layout_weight="0.5"
+					        android:layout_height="fill_parent"
+					        android:text="@string/shareToMap" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,15 +104,6 @@
 				        android:clickable="true"
 				        android:apiKey="@string/googleMapApiKey"
 				        />
-                </LinearLayout>
-                
-                <LinearLayout
-                    android:id="@+id/tab3"
-    				android:paddingTop="60dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-				
-			    
                 </LinearLayout>
             </FrameLayout>
     </TabHost>

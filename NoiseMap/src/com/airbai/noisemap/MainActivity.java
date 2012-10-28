@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -31,6 +33,8 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityGroup;
@@ -48,6 +52,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,7 +81,10 @@ public class MainActivity extends MapActivity {
 	private Location currentLocation;
 	private GeoPoint currentPoint;
 	private MapController mapController;
-
+	MediaRecorder mRecorder = new MediaRecorder();
+	boolean mRecorderStarted = false;
+	Timer mRecorderTimer = new Timer();
+	Thread mRecorderThread;
 
     /** Called when the activity is first created. */
 	private Button mLogin;
@@ -96,46 +104,46 @@ public class MainActivity extends MapActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        TextView decibel = (TextView)findViewById(R.id.recorder);
+        
         TabHost tabHost=(TabHost)findViewById(R.id.tabhost);
         //LocalActivityManager mLocalActivityManager = new LocalActivityManager(this, false);
         tabHost.setup();
 
-        TabSpec spec1=tabHost.newTabSpec("Tab 1");
+        TabSpec spec1=tabHost.newTabSpec("噪音");
         spec1.setContent(R.id.tab1);
-        spec1.setIndicator("Tab 1");
+        spec1.setIndicator("噪音");
 
-        TabSpec spec2=tabHost.newTabSpec("Tab 2");
+        TabSpec spec2=tabHost.newTabSpec("地图");
         Intent intent=new Intent(this.getBaseContext(), MapView.class);
-        spec2.setIndicator("Tab 2");
+        spec2.setIndicator("地图");
         spec2.setContent(R.id.tab2);
         
         MapView mapView = (MapView)findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
-        mapView.setSatellite(false);
-        mapController = mapView.getController();
-        mapController.setZoom(13);
-        getLastLocation();
-        animateToCurrentLocation();
+//        mapView.setBuiltInZoomControls(true);
+//        mapView.setSatellite(false);
+//        mapController = mapView.getController();
+//        mapController.setZoom(13);
+//        getLastLocation();
+//        animateToCurrentLocation();
         
-        if(currentPoint != null){
-        //mapView.getOverlays()用于得到所有图层对象
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		
-		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
-		
-		FirstOverlay firstOverlay = new FirstOverlay(drawable);
-        OverlayItem overlayitem = new OverlayItem(currentPoint, "Hola, Mundo!","I'm in Mexico City!");  
-        firstOverlay.addOverlay(overlayitem);
-		
-		mapOverlays.add(firstOverlay);
-        }
-        TabSpec spec3=tabHost.newTabSpec("Tab 3");
-        spec3.setIndicator("Tab 3");
-        spec3.setContent(R.id.tab3);
+        
+//        if(currentPoint != null){
+//            mapController.setCenter(currentPoint);
+//	        //mapView.getOverlays()用于得到所有图层对象
+//			List<Overlay> mapOverlays = mapView.getOverlays();
+//			
+//			Drawable drawable = this.getResources().getDrawable(R.drawable.m);
+//			
+//			FirstOverlay firstOverlay = new FirstOverlay(drawable);
+//	        OverlayItem overlayitem = new OverlayItem(currentPoint, "Hola, Mundo!","I'm in Mexico City!");  
+//	        firstOverlay.addOverlay(overlayitem);
+//			
+//			mapOverlays.add(firstOverlay);
+//        }
 
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
-        tabHost.addTab(spec3);
 
     		//mToken = (TextView) timeline.findViewById(R.id.tvToken);
     		mLogin = (Button) this.findViewById(R.id.btnShareToWeibo);
@@ -319,87 +327,102 @@ public class MainActivity extends MapActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
+
+        // 调用父类方法来加入系统菜单
+        // 虽然目前android还没有系统菜单，但是为了兼容到以后的版本，最好加上
+    super.onCreateOptionsMenu(menu);
+       
+        // 添加菜单项（多种方式）
+        // 1.直接指定标题
+        menu.add("设置");
+       
+        // 如果希望显示菜单，请返回true
+    return true;
     }
 
     public void sendMessage(View view){
-        // Capture mono data at 16kHz
-           int frequency = getValidSampleRates();
-           
-           if(frequency < 0) return;
-           int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
-           int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
-    
-           // The minimal buffer size CANNOT be merely 20ms of data, it must be
-           // at least 1024 bytes in this case, this is most likely due to a MMIO
-           // hardware limit.
-           final int bufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
-    
-           // Setup the audio recording machinery
-           AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT,
-           frequency, channelConfiguration,
-           audioEncoding, bufferSize);
-    
-           // The short and file buffers, this might not be the most
-           // efficient way to do things, but since we're planning on
-           // redirecting this data into an encoder in a later version
-           // of this project, we're not worried about it.
-    
-           // 320 = 16kHz * 20ms - Number of frames of audio required.
-           short[] buffer = new short[320];
-           byte[] fileBuffer = new byte[320 * 2];
-           audioRecord.startRecording();
-           
-           FileOutputStream f = null;
-           File sdCard = Environment.getExternalStorageDirectory();
-           File dir = new File(sdCard.getAbsolutePath() + "/audioTest");
-           dir.mkdirs();
-           File file = new File(dir, "testAudio.wav");
-           try {
-               f = new FileOutputStream(file, true);
-           } catch (FileNotFoundException e) {
-               e.printStackTrace();
-           }
-    
-           // Blocking loop uses about 40% of the CPU to do this.
-           int sampleNumber = 0;
-    
-           // We'll capture 3000 samples of 20ms each,
-           // giving us 60 seconds of audio data.
-           while(sampleNumber < 3000) {
-               audioRecord.read(buffer, 0, 320);
-    
-               for(int i = 0; i < buffer.length; i++) {
-                   fileBuffer[i*2] = (byte)(buffer[i] & (short)0xFF);
-                   fileBuffer[i*2 + 1] = (byte)(buffer[i] >> 8);
-               }
-    
-               try {
-                   f.write(fileBuffer);
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-    
-               sampleNumber++;
-           }
-    
-           try {
-               f.close();
-           } catch (IOException e) {
-               e.printStackTrace();
-           }
-           
+    	
+    	if(!mRecorderStarted)
+    	{
+    	try {
+	    	mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+	    	mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+	    	mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+	    	mRecorder.setOutputFile("/dev/null"); 
+				mRecorder.prepare();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
 
-       	Intent intent = new Intent(this, DisplayMessageActivity.class);
-       	EditText editText = (EditText) findViewById(R.id.edit_message);
-       	String message = editText.getText().toString();
-       	intent.putExtra(EXTRA_MESSAGE, message);
-       	startActivity(intent);
-    
+	    	mRecorderThread = new Thread(){
+	    		@Override 
+				public void run() {
 
+	    	    	mRecorder.start();
+			    	TimerTask task = new TimerTask() {
+			            public void run() {
+					    	
+			            	//mRecorder != null ? mRecorder.getMaxAmplitude() : 0;
+				           	String message = Double.toString(mRecorder != null ? soundDb(mRecorder.getMaxAmplitude(), 20) : 0);
+				           	Message msg = mHandler.obtainMessage();
+				           	msg.obj = message;
+				           	mHandler.sendMessage(msg);
+			            }
+			        };
+			        
+	    		 mRecorderTimer.scheduleAtFixedRate(task, 500, 500);
+		        	
+	    		}
+	    	};
+	    	
+	    	mRecorderThread.start();
+	    	mRecorderStarted =true;
+    	}
+    	else
+    	{
+    		mRecorderThread.interrupt();
+    		mRecorderStarted = false;
+    		
+    		if(mRecorderTimer != null)
+    		{
+    			mRecorderTimer.cancel();
+    		}
+    	}
     }
     
+    Handler mHandler = new Handler()  
+    {  
+      public void handleMessage(Message msg)  
+      {  
+        super.handleMessage(msg);  
+        
+        TextView textView = (TextView)findViewById(R.id.recorder);
+        java.text.DecimalFormat   df   =new   java.text.DecimalFormat("#0.##"); 
+       	textView.setText(df.format(Double.parseDouble(msg.obj.toString())));
+       	
+       	TextView recorderDescription = (TextView)findViewById(R.id.recorderDescription);
+       	ImageButton btn = (ImageButton)findViewById(R.id.btnRecord);
+       	if(mRecorderStarted)
+    	{
+       		recorderDescription.setText(R.string.recorderDescriptionOn);
+       		btn.setImageResource(R.drawable.speaker);
+    	}
+       	else
+       	{
+       		recorderDescription.setText(R.string.recorderDescription);
+       		btn.setImageResource(R.drawable.microphone);
+       	}
+      }  
+    };  
+    
+    private double soundDb(int maxAmple, double ampl){
+        return  Math.round(20 * Math.log10(maxAmple / ampl)*100)/100;
+    }
     
     public int getValidSampleRates() {
     	int tempRate = -1;
@@ -507,15 +530,15 @@ public class MainActivity extends MapActivity {
 	    Criteria criteria = new Criteria();
 	    criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
 	    criteria.setAccuracy(Criteria.NO_REQUIREMENT);
-	    String bestProvider = locationManager.getBestProvider(criteria, true);
+	    String bestProvider = locationManager.getBestProvider(criteria, false);
 	    return bestProvider;
 	}
 	 
 	public void setCurrentLocation(Location location){
 	    int currLatitude = (int) (location.getLatitude()*1E6);
 	    int currLongitude = (int) (location.getLongitude()*1E6);
-	    currentPoint = new GeoPoint(currLatitude,currLongitude);
-	 
+	    //currentPoint = new GeoPoint(currLatitude,currLongitude);
+	    currentPoint = new GeoPoint(38, 110);
 	    currentLocation = new Location("");
 	    currentLocation.setLatitude(currentPoint.getLatitudeE6() / 1e6);
 	    currentLocation.setLongitude(currentPoint.getLongitudeE6() / 1e6);

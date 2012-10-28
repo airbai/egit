@@ -1,6 +1,5 @@
 <resources>
-
-    <string name="app_name">NoiseMap</string>
+    <string name="app_name">噪音地图</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="edit_message">Enter a message.</string>
@@ -12,5 +11,6 @@
 	<string name="shareToWeibo">分享到微博</string>
 	<string name="shareToMap">上传到地图</string>
 	<string name="recorderDescription">点击话筒开始测分贝</string>
+	<string name="recorderDescriptionOn">测量中...</string>
 	<string name="googleMapApiKey">0Lj_JYJIppF95ji0WD6XprgtLmDQnmlOKbQ4RXA</string>
 </resources>
